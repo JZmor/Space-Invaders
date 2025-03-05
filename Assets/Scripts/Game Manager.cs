@@ -53,15 +53,17 @@ public class GameManager : MonoBehaviour
         enemySpeedup = 0;
         Instantiate(playerPrefab);
         SpawnEnemies();
+        speed = 1;
+        speedUpEvent?.Invoke(speed);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (enemySpeedup == 5)
+        if (enemySpeedup >= 5)
         {
             enemySpeedup = 0;
-            speed = speed++;
+            speed += 1;
             speedUpEvent?.Invoke(speed);
         }
         if (enemiesKilled == 20)
