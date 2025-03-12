@@ -1,6 +1,7 @@
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -55,6 +56,7 @@ public class GameManager : MonoBehaviour
         SpawnEnemies();
         speed = 1;
         speedUpEvent?.Invoke(speed);
+        SceneManager.LoadScene("Credits");
     }
 
     // Update is called once per frame
@@ -70,6 +72,7 @@ public class GameManager : MonoBehaviour
         {
             enemiesKilled = 0;
             SpawnEnemies();
+            //SceneManager.LoadScene("Credits");
         }
     }
 

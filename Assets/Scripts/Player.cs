@@ -13,6 +13,8 @@ public class Player : MonoBehaviour
   public Transform shottingOffset;
 
   Animator playerAnimator;
+
+  public AudioClip explodeClip;
   void Start()
   {
     Enemy.OnEnemyDied += EnemyOnOnEnemyDied;
@@ -36,7 +38,6 @@ public class Player : MonoBehaviour
       {
         playerAnimator.SetTrigger("Shoot");
         GameObject shot = Instantiate(bulletPrefab, shottingOffset.position, Quaternion.identity);
-        Debug.Log("Bang!");
 
         //Destroy(shot, 3f);
       }
@@ -47,8 +48,21 @@ public class Player : MonoBehaviour
       if (other.gameObject.CompareTag("Evil Bullet"))
       {
         Destroy(other.gameObject);
-        OnPlayerDied?.Invoke();
-        Destroy(gameObject);
+        GetComponent<Collider2D>().enabled = false;
+        playerAnimator.SetTrigger("Death");
       }
+    }
+
+    void killPlayer()
+    {
+      OnPlayerDied?.Invoke();
+      Destroy(gameObject);
+    }
+
+    void PlaySound()
+    {
+      AudioSource audioSrc = GetComponent<AudioSource>();
+      audioSrc.clip = explodeClip;
+      audioSrc.Play();
     }
 }

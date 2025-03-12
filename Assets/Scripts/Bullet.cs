@@ -12,6 +12,7 @@ public class Bullet : MonoBehaviour
   public float speed = 5;
 
   public bool evil = false;
+  
     // Start is called before the first frame update
     void Start()
     {

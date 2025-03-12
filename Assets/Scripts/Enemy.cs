@@ -12,12 +12,16 @@ public class Enemy : MonoBehaviour
 
     public delegate void HitWall(bool left);
     public static event HitWall OnHitWall;
+
+    public bool still = false;
     
     public GameObject bulletPrefab;
     Animator enemyAnimator;
     private bool direction = true;
 
     public int value = 10;
+
+    public AudioClip explodeClip;
     // Start is called before the first frame update
 
     void Start()
@@ -56,23 +60,31 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
-        if (this.transform.position.x >= 20 && !direction)
+        if (!still)
         {
-            //enemyAnimator.SetTrigger("Down");
-            //enemyAnimator.SetBool("Right", false);
-            OnHitWall?.Invoke(false);
-            direction = true;
-        } else if (this.transform.position.x <= -20 && direction)
-        {
-            //enemyAnimator.SetTrigger("Down");
-            //enemyAnimator.SetBool("Right", true);
-            OnHitWall?.Invoke(true);
-            direction = false;
-        }
+            if (this.transform.position.x >= 20 && !direction)
+            {
+                //enemyAnimator.SetTrigger("Down");
+                //enemyAnimator.SetBool("Right", false);
+                OnHitWall?.Invoke(false);
+                direction = true;
+            }
+            else if (this.transform.position.x <= -20 && direction)
+            {
+                //enemyAnimator.SetTrigger("Down");
+                //enemyAnimator.SetBool("Right", true);
+                OnHitWall?.Invoke(true);
+                direction = false;
+            }
 
-        if (new Random().Next(0, 10000) == 777)
+            if (new Random().Next(0, 10000) == 777 && transform.position.x <= 10 && transform.position.x >= -10)
+            {
+                enemyAnimator.SetTrigger("Shoot");
+            }
+        }
+        else
         {
-            GameObject shot = Instantiate(bulletPrefab, this.transform.position, Quaternion.identity);
+            enemyAnimator.SetBool("Idle", true);
         }
     }
 
@@ -82,8 +94,8 @@ public class Enemy : MonoBehaviour
         {
             Debug.Log("Ouch!");
             Destroy(collision.gameObject);
-            OnEnemyDied?.Invoke(value);
-            Destroy(gameObject);
+            GetComponent<Collider2D>().enabled = false;
+            enemyAnimator.SetTrigger("Death");
         }
     }
 
@@ -92,5 +104,23 @@ public class Enemy : MonoBehaviour
         Enemy.OnHitWall -= WeHitWall;
         GameManager.speedUpEvent -= SetSpeed;
         Player.OnPlayerDied -= PlayerDied;
+    }
+
+    void SpawnBullet()
+    {
+        GameObject shot = Instantiate(bulletPrefab, this.transform.position, Quaternion.identity);
+    }
+
+    void KillEnemy()
+    {
+        OnEnemyDied?.Invoke(value);
+        Destroy(gameObject);
+    }
+
+    void PlaySound()
+    {
+        AudioSource audioSrc = GetComponent<AudioSource>();
+        audioSrc.clip = explodeClip;
+        audioSrc.Play();
     }
 }
